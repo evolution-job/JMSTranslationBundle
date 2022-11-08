@@ -62,7 +62,7 @@ class SymfonyDumperAdapter implements DumperInterface
      *
      * @throws RuntimeException
      */
-    public function dump(MessageCatalogue $catalogue, $domain = 'messages')
+    public function dump(MessageCatalogue $catalogue, $domain = 'messages'): string
     {
         $symfonyCatalogue = new SymfonyCatalogue($catalogue->getLocale());
 
@@ -73,8 +73,8 @@ class SymfonyDumperAdapter implements DumperInterface
             );
         }
 
-        $tmpPath = sys_get_temp_dir() . '/' . uniqid('translation', false);
-        if (!is_dir($tmpPath) && false === @mkdir($tmpPath, 0777, true)) {
+        $tmpPath = sys_get_temp_dir() . '/' . uniqid('translation', true);
+        if (!is_dir($tmpPath) && !mkdir($tmpPath, 0777, true) && !is_dir($tmpPath)) {
             throw new RuntimeException(sprintf('Could not create temporary directory "%s".', $tmpPath));
         }
 

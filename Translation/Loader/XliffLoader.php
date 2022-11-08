@@ -24,6 +24,8 @@ use JMS\TranslationBundle\Exception\RuntimeException;
 use JMS\TranslationBundle\Model\FileSource;
 use JMS\TranslationBundle\Model\Message\XliffMessage as Message;
 use JMS\TranslationBundle\Model\MessageCatalogue;
+use SimpleXMLElement;
+use function assert;
 
 class XliffLoader implements LoaderInterface
 {
@@ -34,11 +36,11 @@ class XliffLoader implements LoaderInterface
      *
      * @return MessageCatalogue
      */
-    public function load(mixed $resource, string $locale, string $domain = 'messages'): MessageCatalogue
+    public function load($resource, string $locale, string $domain = 'messages'): MessageCatalogue
     {
         $previousErrors = libxml_use_internal_errors(true);
         $previousEntities = $this->libxmlDisableEntityLoader(false);
-        if (false === $doc = simplexml_load_file((string) $resource)) {
+        if (false === $doc = simplexml_load_string(file_get_contents((string)$resource))) {
             libxml_use_internal_errors($previousErrors);
             $this->libxmlDisableEntityLoader($previousEntities);
             $libxmlError = libxml_get_last_error();
@@ -58,14 +60,14 @@ class XliffLoader implements LoaderInterface
         $catalogue->setLocale($locale);
 
         foreach ($doc->xpath('//xliff:trans-unit') as $trans) {
-            \assert($trans instanceof \SimpleXMLElement);
+            assert($trans instanceof SimpleXMLElement);
             $resName = (string) $trans->attributes()->resname;
             $id = $resName ?: (string) $trans->source;
 
             $m = Message::create($id, $domain)
                     ->setDesc((string) $trans->source)
                     ->setLocaleString((string) $trans->target);
-            \assert($m instanceof Message);
+            assert($m instanceof Message);
 
             $m->setApproved((string) $trans['approved'] === 'yes');
 

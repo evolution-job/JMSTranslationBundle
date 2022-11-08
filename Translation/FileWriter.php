@@ -52,7 +52,7 @@ class FileWriter
      *
      * @throws InvalidArgumentException
      */
-    public function write(MessageCatalogue $catalogue, $domain, $filePath, $format)
+    public function write(MessageCatalogue $catalogue, string $domain, string $filePath, string $format): void
     {
         if (!isset($this->dumpers[$format])) {
             $allowedFormats = array_keys($this->dumpers);

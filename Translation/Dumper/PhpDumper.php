@@ -40,7 +40,7 @@ class PhpDumper extends ArrayStructureDumper
      *
      * @return string
      */
-    protected function dumpStructure(array $structure)
+    protected function dumpStructure(array $structure): string
     {
         $this->writer
             ->reset()
@@ -56,12 +56,12 @@ class PhpDumper extends ArrayStructureDumper
     /**
      * @param array $structure
      */
-    private function dumpStructureRecursively(array $structure)
+    private function dumpStructureRecursively(array $structure): void
     {
         $isFirst = true;
         $precededByMessage = false;
         foreach ($structure as $k => $v) {
-            if ($isMessage = $v instanceof Message) {
+            if ($isMessage = ($v instanceof Message)) {
                 $desc = $v->getDesc();
                 $meaning = $v->getMeaning();
 

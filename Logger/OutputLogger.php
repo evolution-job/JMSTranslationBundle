@@ -25,15 +25,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class OutputLogger implements LoggerInterface
 {
-    public const EMERG  = 1;
-    public const ALERT  = 2;
-    public const CRIT   = 4;
-    public const ERR    = 8;
-    public const WARN   = 16;
+    public const EMERG = 1;
+    public const ALERT = 2;
+    public const CRIT = 4;
+    public const ERR = 8;
+    public const WARN = 16;
     public const NOTICE = 32;
-    public const INFO   = 64;
-    public const DEBUG  = 128;
-    public const ALL    = 255;
+    public const INFO = 64;
+    public const DEBUG = 128;
+    public const ALL = 255;
 
     /**
      * @var OutputInterface
@@ -53,7 +53,7 @@ class OutputLogger implements LoggerInterface
     /**
      * @param int $level
      */
-    public function setLevel($level)
+    public function setLevel(int $level): void
     {
         $this->level = $level;
     }
@@ -64,18 +64,17 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function emergency(string|\Stringable $message, array $context = []): void
+    public function emergency($message, array $context = []): void
     {
-        $this->emerg($message, $context);
+        $this->emerg($message);
     }
 
     /**
      * @param string $message
-     * @param array $context
      *
      * @return void
      */
-    public function emerg(string|\Stringable $message, array $context = []): void
+    public function emerg(string $message): void
     {
         if (0 === ($this->level & self::EMERG)) {
             return;
@@ -90,7 +89,7 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function alert(string|\Stringable $message, array $context = []): void
+    public function alert($message, array $context = []): void
     {
         if (0 === ($this->level & self::ALERT)) {
             return;
@@ -105,18 +104,17 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function critical(string|\Stringable $message, array $context = []): void
+    public function critical($message, array $context = []): void
     {
-        $this->crit($message, $context);
+        $this->crit($message);
     }
 
     /**
      * @param string $message
-     * @param array $context
      *
      * @return void
      */
-    public function crit(string|\Stringable $message, array $context = []): void
+    public function crit(string $message): void
     {
         if (0 === ($this->level & self::CRIT)) {
             return;
@@ -131,18 +129,17 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function error(string|\Stringable $message, array $context = []): void
+    public function error($message, array $context = []): void
     {
-        $this->err($message, $context);
+        $this->err($message);
     }
 
     /**
      * @param string $message
-     * @param array $context
      *
      * @return void
      */
-    public function err(string|\Stringable $message, array $context = []): void
+    public function err(string $message): void
     {
         if (0 === ($this->level & self::ERR)) {
             return;
@@ -157,18 +154,17 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function warning(string|\Stringable $message, array $context = []): void
+    public function warning($message, array $context = []): void
     {
-        $this->warn($message, $context);
+        $this->warn($message);
     }
 
     /**
      * @param string $message
-     * @param array $context
      *
      * @return void
      */
-    public function warn(string|\Stringable $message, array $context = []): void
+    public function warn(string $message): void
     {
         if (0 === ($this->level & self::WARN)) {
             return;
@@ -183,7 +179,7 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function notice(string|\Stringable $message, array $context = []): void
+    public function notice($message, array $context = []): void
     {
         if (0 === ($this->level & self::NOTICE)) {
             return;
@@ -198,7 +194,7 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function info(string|\Stringable $message, array $context = []): void
+    public function info($message, array $context = []): void
     {
         if (0 === ($this->level & self::INFO)) {
             return;
@@ -213,7 +209,7 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function debug(string|\Stringable $message, array $context = []): void
+    public function debug($message, array $context = []): void
     {
         if (0 === ($this->level & self::DEBUG)) {
             return;
@@ -229,7 +225,7 @@ class OutputLogger implements LoggerInterface
      *
      * @return void
      */
-    public function log($level, string|\Stringable $message, array $context = []): void
+    public function log($level, $message, array $context = []): void
     {
         if (0 === ($this->level & $level)) {
             return;

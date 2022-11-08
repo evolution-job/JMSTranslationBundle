@@ -20,6 +20,9 @@ declare(strict_types=1);
 
 namespace JMS\TranslationBundle\Translation\Dumper;
 
+use DateTime;
+use DOMDocument;
+use DOMException;
 use JMS\TranslationBundle\JMSTranslationBundle;
 use JMS\TranslationBundle\Model\FileSource;
 use JMS\TranslationBundle\Model\Message\XliffMessage;
@@ -56,22 +59,22 @@ class XliffDumper implements DumperInterface
      */
     private $addReferencePosition = true;
 
-    public function setAddDate($bool)
+    public function setAddDate(bool $bool): void
     {
-        $this->addDate = (bool) $bool;
+        $this->addDate = $bool;
     }
 
-    public function setSourceLanguage($lang)
+    public function setSourceLanguage(string $lang): void
     {
         $this->sourceLanguage = $lang;
     }
 
-    public function setAddReference($bool)
+    public function setAddReference(bool $bool): void
     {
         $this->addReference = $bool;
     }
 
-    public function setAddReferencePosition($bool)
+    public function setAddReferencePosition(bool $bool): void
     {
         $this->addReferencePosition = $bool;
     }
@@ -79,12 +82,12 @@ class XliffDumper implements DumperInterface
     /**
      * @param MessageCatalogue $catalogue
      * @param MessageCatalogue|string $domain
-     *
-     * @return string
+     * @return false|string
+     * @throws DOMException
      */
-    public function dump(MessageCatalogue $catalogue, $domain = 'messages')
+    public function dump(MessageCatalogue $catalogue, $domain = 'messages'): ?string
     {
-        $doc = new \DOMDocument('1.0', 'utf-8');
+        $doc = new DOMDocument('1.0', 'utf-8');
         $doc->formatOutput = true;
 
         $doc->appendChild($root = $doc->createElement('xliff'));
@@ -95,12 +98,12 @@ class XliffDumper implements DumperInterface
         $root->appendChild($file = $doc->createElement('file'));
 
         if ($this->addDate) {
-            $date = new \DateTime();
+            $date = new DateTime();
             $file->setAttribute('date', $date->format('Y-m-d\TH:i:s\Z'));
         }
 
         $file->setAttribute('source-language', $this->sourceLanguage);
-        $file->setAttribute('target-language', (string) $catalogue->getLocale());
+        $file->setAttribute('target-language', (string)$catalogue->getLocale());
         $file->setAttribute('datatype', 'plaintext');
         $file->setAttribute('original', 'not.available');
 
@@ -118,8 +121,8 @@ class XliffDumper implements DumperInterface
 
         foreach ($catalogue->getDomain($domain)->all() as $id => $message) {
             $body->appendChild($unit = $doc->createElement('trans-unit'));
-            $unit->setAttribute('id', hash('sha1', (string) $id));
-            $unit->setAttribute('resname', (string) $id);
+            $unit->setAttribute('id', hash('sha1', (string)$id));
+            $unit->setAttribute('resname', (string)$id);
             if ($message instanceof XliffMessage && $message->isApproved()) {
                 $unit->setAttribute('approved', 'yes');
             }
@@ -148,7 +151,7 @@ class XliffDumper implements DumperInterface
 
             if ($message instanceof XliffMessage) {
                 if ($message->hasState()) {
-                    $target->setAttribute('state', (string) $message->getState());
+                    $target->setAttribute('state', (string)$message->getState());
                 }
 
                 if ($message->hasNotes()) {
@@ -163,29 +166,30 @@ class XliffDumper implements DumperInterface
                 $target->setAttribute('state', XliffMessage::STATE_NEW);
             }
 
-            if ($this->addReference) {
-                // As per the OASIS XLIFF 1.2 non-XLIFF elements must be at the end of the <trans-unit>
-                if ($sources = $message->getSources()) {
-                    $sortedSources = $this->getSortedSources($sources);
-                    foreach ($sortedSources as $source) {
-                        if ($source instanceof FileSource) {
-                            $unit->appendChild($refFile = $doc->createElement('jms:reference-file', $source->getPath()));
+            // As per the OASIS XLIFF 1.2 non-XLIFF elements must be at the end of the <trans-unit>
+            if ($this->addReference && $sources = $message->getSources()) {
 
-                            if ($this->addReferencePosition) {
-                                if ($source->getLine()) {
-                                    $refFile->setAttribute('line', (string) $source->getLine());
-                                }
+                $sortedSources = $this->getSortedSources($sources);
 
-                                if ($source->getColumn()) {
-                                    $refFile->setAttribute('column', (string) $source->getColumn());
-                                }
+                foreach ($sortedSources as $source) {
+
+                    if ($source instanceof FileSource) {
+                        $unit->appendChild($refFile = $doc->createElement('jms:reference-file', $source->getPath()));
+
+                        if ($this->addReferencePosition) {
+                            if ($source->getLine()) {
+                                $refFile->setAttribute('line', (string)$source->getLine());
                             }
 
-                            continue;
+                            if ($source->getColumn()) {
+                                $refFile->setAttribute('column', (string)$source->getColumn());
+                            }
                         }
 
-                        $unit->appendChild($doc->createElementNS('jms:reference', (string) $source));
+                        continue;
                     }
+
+                    $unit->appendChild($doc->createElementNS('jms:reference', (string)$source));
                 }
             }
 
@@ -202,10 +206,9 @@ class XliffDumper implements DumperInterface
      * If the reference position are not used, the reference file will be write once
      *
      * @param array $sources
-     *
      * @return array
      */
-    protected function getSortedSources(array $sources)
+    protected function getSortedSources(array $sources): array
     {
         $indexedSources = [];
         foreach ($sources as $source) {
@@ -223,7 +226,7 @@ class XliffDumper implements DumperInterface
                     }
                 }
             } else {
-                $index = (string) $source;
+                $index = (string)$source;
             }
 
             $indexedSources[$index] = $source;

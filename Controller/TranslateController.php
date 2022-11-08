@@ -59,7 +59,7 @@ class TranslateController
     /**
      * @param string $lang
      */
-    public function setSourceLanguage($lang)
+    public function setSourceLanguage(string $lang): void
     {
         $this->sourceLanguage = $lang;
     }
@@ -72,7 +72,7 @@ class TranslateController
      * @Route("/", name="jms_translation_index", options = {"i18n" = false})
      * @Template("@JMSTranslation/Translate/index.html.twig")
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): array
     {
         $configs = $this->configFactory->getNames();
         $config = $request->query->get('config') ?: reset($configs);
@@ -99,15 +99,12 @@ class TranslateController
             $locale = reset($locales);
         }
 
-        $catalogue = null;
-        if ($this->loader->supportLoader($files[$domain][$locale][0])) {
-            $catalogue = $this->loader->loadFile(
-                $files[$domain][$locale][1]->getPathName(),
-                $files[$domain][$locale][0],
-                $locale,
-                $domain
-            );
-        }
+        $catalogue = $this->loader->loadFile(
+            $files[$domain][$locale][1]->getPathName(),
+            $files[$domain][$locale][0],
+            $locale,
+            $domain
+        );
 
         // create alternative messages
         // TODO: We should probably also add these to the XLIFF file for external translators,
@@ -118,17 +115,15 @@ class TranslateController
                 continue;
             }
 
-            if ($this->loader->supportLoader($files[$domain][$otherLocale][0])) {
-                $altCatalogue = $this->loader->loadFile(
-                    $files[$domain][$otherLocale][1]->getPathName(),
-                    $files[$domain][$otherLocale][0],
-                    $otherLocale,
-                    $domain
-                );
+            $altCatalogue = $this->loader->loadFile(
+                $files[$domain][$otherLocale][1]->getPathName(),
+                $files[$domain][$otherLocale][0],
+                $otherLocale,
+                $domain
+            );
 
-                foreach ($altCatalogue->getDomain($domain)->all() as $id => $message) {
-                    $alternativeMessages[$id][$otherLocale] = $message;
-                }
+            foreach ($altCatalogue->getDomain($domain)->all() as $id => $message) {
+                $alternativeMessages[$id][$otherLocale] = $message;
             }
         }
 

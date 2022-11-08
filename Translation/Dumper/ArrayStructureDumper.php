@@ -30,18 +30,18 @@ abstract class ArrayStructureDumper implements DumperInterface
      */
     private $prettyPrint = true;
 
-    public function setPrettyPrint($bool)
+    public function setPrettyPrint($bool): void
     {
-        $this->prettyPrint = (bool) $bool;
+        $this->prettyPrint = (bool)$bool;
     }
 
     /**
      * @param MessageCatalogue $catalogue
      * @param string $domain
      *
-     * @return string
+     * @return string|null
      */
-    public function dump(MessageCatalogue $catalogue, $domain = 'messages')
+    public function dump(MessageCatalogue $catalogue, $domain = 'messages'): ?string
     {
         $structure = $catalogue->getDomain($domain)->all();
 
@@ -57,23 +57,24 @@ abstract class ArrayStructureDumper implements DumperInterface
                 // are before sub-paths, e.g.
                 // array_keys($structure) = array('foo.bar', 'foo.bar.baz')
                 // but NOT: array_keys($structure) = array('foo.bar.baz', 'foo.bar')
-                for ($i = 0, $c = count($parts); $i < $c; $i++) {
+                $c = count($parts);
+                foreach ($parts as $i => $iValue) {
                     if ($i + 1 === $c) {
-                        $pointer[$parts[$i]] = $message;
+                        $pointer[$iValue] = $message;
                         break;
                     }
 
-                    if (!isset($pointer[$parts[$i]])) {
-                        $pointer[$parts[$i]] = [];
+                    if (!isset($pointer[$iValue])) {
+                        $pointer[$iValue] = [];
                     }
 
-                    if ($pointer[$parts[$i]] instanceof Message) {
+                    if ($pointer[$iValue] instanceof Message) {
                         $subPath = implode('.', array_slice($parts, $i));
                         $pointer[$subPath] = $message;
                         break;
                     }
 
-                    $pointer = &$pointer[$parts[$i]];
+                    $pointer = &$pointer[$iValue];
                 }
             }
 
@@ -89,5 +90,5 @@ abstract class ArrayStructureDumper implements DumperInterface
      *
      * @return string
      */
-    abstract protected function dumpStructure(array $structure);
+    abstract protected function dumpStructure(array $structure): string;
 }

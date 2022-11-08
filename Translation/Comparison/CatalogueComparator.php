@@ -32,7 +32,7 @@ class CatalogueComparator
     private $domains = [];
     private $ignoredDomains = [];
 
-    public function setDomains(array $domains)
+    public function setDomains(array $domains): void
     {
         $this->domains = $domains;
     }
@@ -40,7 +40,7 @@ class CatalogueComparator
     /**
      * @param array $domains
      */
-    public function setIgnoredDomains(array $domains)
+    public function setIgnoredDomains(array $domains): void
     {
         $this->ignoredDomains = $domains;
     }
@@ -53,11 +53,24 @@ class CatalogueComparator
      *
      * @return ChangeSet
      */
-    public function compare(MessageCatalogue $current, MessageCatalogue $new)
+    public function compare(MessageCatalogue $current, MessageCatalogue $new): ChangeSet
     {
-        $newMessages = [];
 
-        foreach ($new->getDomains() as $name => $domain) {
+        $newMessages = $this->extractMessages($new, $current);
+        $deletedMessages = $this->extractMessages($current, $new);
+
+        return new ChangeSet($newMessages, $deletedMessages);
+    }
+
+    /**
+     * @param MessageCatalogue $catalogue
+     * @param MessageCatalogue $otherCtalogue
+     * @return array
+     */
+    private function extractMessages(MessageCatalogue $catalogue, MessageCatalogue $otherCtalogue): array
+    {
+        $messages = [];
+        foreach ($catalogue->getDomains() as $name => $domain) {
             if ($this->domains && !isset($this->domains[$name])) {
                 continue;
             }
@@ -67,35 +80,16 @@ class CatalogueComparator
             }
 
             foreach ($domain->all() as $message) {
-                if ($current->has($message)) {
+                if ($otherCtalogue->has($message)) {
                     // FIXME: Compare what has changed
 
                     continue;
                 }
 
-                $newMessages[] = $message;
+                $messages[] = $message;
             }
         }
 
-        $deletedMessages = [];
-        foreach ($current->getDomains() as $name => $domain) {
-            if ($this->domains && !isset($this->domains[$name])) {
-                continue;
-            }
-
-            if (isset($this->ignoredDomains[$name])) {
-                continue;
-            }
-
-            foreach ($domain->all() as $message) {
-                if ($new->has($message)) {
-                    continue;
-                }
-
-                $deletedMessages[] = $message;
-            }
-        }
-
-        return new ChangeSet($newMessages, $deletedMessages);
+        return $messages;
     }
 }
