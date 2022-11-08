@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace JMS\TranslationBundle\Tests\Translation\Loader;
 
-use JMS\TranslationBundle\Model\MessageCatalogue;
 use JMS\TranslationBundle\Translation\Loader\SymfonyLoaderAdapter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Translation\Loader\LoaderInterface;
@@ -28,7 +27,7 @@ use Symfony\Component\Translation\MessageCatalogue as SymfonyMessageCatalogue;
 
 class SymfonyLoaderAdapterTest extends TestCase
 {
-    public function testLoad()
+    public function testLoad(): void
     {
         $symfonyCatalogue = new SymfonyMessageCatalogue('en');
         $symfonyCatalogue->add(['foo' => 'bar']);
@@ -39,9 +38,8 @@ class SymfonyLoaderAdapterTest extends TestCase
             ->with('foo', 'en', 'messages')
             ->willReturn($symfonyCatalogue);
 
-        $adapter         = new SymfonyLoaderAdapter($symfonyLoader);
-        $bundleCatalogue = $adapter->load('foo', 'en', 'messages');
-        $this->assertInstanceOf(MessageCatalogue::class, $bundleCatalogue);
+        $adapter = new SymfonyLoaderAdapter($symfonyLoader);
+        $bundleCatalogue = $adapter->load('foo', 'en');
         $this->assertEquals('en', $bundleCatalogue->getLocale());
         $this->assertTrue($bundleCatalogue->hasDomain('messages'));
         $this->assertTrue($bundleCatalogue->getDomain('messages')->has('foo'));

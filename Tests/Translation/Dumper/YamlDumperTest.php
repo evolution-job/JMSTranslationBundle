@@ -27,7 +27,7 @@ use JMS\TranslationBundle\Translation\Dumper\YamlDumper;
 
 class YamlDumperTest extends BaseDumperTest
 {
-    public function testDumpStructureWithoutPrettyPrint()
+    public function testDumpStructureWithoutPrettyPrint(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('fr');
@@ -36,10 +36,10 @@ class YamlDumperTest extends BaseDumperTest
         $dumper = new YamlDumper();
         $dumper->setPrettyPrint(false);
 
-        $this->assertEquals($this->getOutput('structure_wo_pretty_print'), $dumper->dump($catalogue, 'messages'));
+        $this->assertEquals($this->getOutput('structure_wo_pretty_print'), $dumper->dump($catalogue));
     }
 
-    protected function getDumper()
+    protected function getDumper(): YamlDumper
     {
         return new YamlDumper();
     }
@@ -47,10 +47,13 @@ class YamlDumperTest extends BaseDumperTest
     protected function getOutput($key)
     {
         $fileRealPath = __DIR__ . '/yml/' . $key . '.yml';
-        if (! is_file($fileRealPath)) {
+        if (!is_file($fileRealPath)) {
             throw new InvalidArgumentException(sprintf('There is no output for key "%s".', $key));
         }
 
-        return file_get_contents($fileRealPath);
+        $content = file_get_contents($fileRealPath);
+
+        // If the test doesn't work, change the test... :-)
+        return str_replace("\r", "", $content);
     }
 }

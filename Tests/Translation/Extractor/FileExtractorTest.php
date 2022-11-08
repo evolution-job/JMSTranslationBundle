@@ -22,10 +22,12 @@ namespace JMS\TranslationBundle\Tests\Translation\Extractor;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\DocParser;
+use Exception;
 use JMS\TranslationBundle\Annotation\Desc;
 use JMS\TranslationBundle\Annotation\Ignore;
 use JMS\TranslationBundle\Annotation\Meaning;
 use JMS\TranslationBundle\Model\Message;
+use JMS\TranslationBundle\Model\MessageCatalogue;
 use JMS\TranslationBundle\Translation\Extractor\File\DefaultPhpFileExtractor;
 use JMS\TranslationBundle\Translation\Extractor\File\FormExtractor;
 use JMS\TranslationBundle\Translation\Extractor\File\TranslationContainerExtractor;
@@ -36,6 +38,7 @@ use JMS\TranslationBundle\Translation\FileSourceFactory;
 use JMS\TranslationBundle\Twig\TranslationExtension;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use SplFileInfo;
 use Symfony\Bridge\Twig\Extension\TranslationExtension as SymfonyTranslationExtension;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
@@ -46,15 +49,18 @@ use Twig\Loader\FilesystemLoader;
 
 class FileExtractorTest extends TestCase
 {
-    public function testExtractWithSimpleTestFixtures()
+    /**
+     * @throws Exception
+     */
+    public function testExtractWithSimpleTestFixtures(): void
     {
-        $expected          = [];
-        $basePath          = __DIR__ . '/Fixture/SimpleTest/';
+        $expected = [];
+        $basePath = __DIR__ . '/Fixture/SimpleTest/';
         $fileSourceFactory = new FileSourceFactory('faux');
 
         // Controller
         $message = new Message('controller.foo');
-        $message->addSource($fileSourceFactory->create(new \SplFileInfo($basePath . 'Controller/DefaultController.php'), 29));
+        $message->addSource($fileSourceFactory->create(new SplFileInfo($basePath . 'Controller/DefaultController.php'), 29));
         $message->setDesc('Foo');
         $expected['controller.foo'] = $message;
 
@@ -65,29 +71,29 @@ class FileExtractorTest extends TestCase
         // Templates
         foreach (['php', 'twig'] as $engine) {
             $message = new Message($engine . '.foo');
-            $message->addSource($fileSourceFactory->create(new \SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 1));
+            $message->addSource($fileSourceFactory->create(new SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 1));
             $expected[$engine . '.foo'] = $message;
 
             $message = new Message($engine . '.bar');
             $message->setDesc('Bar');
-            $message->addSource($fileSourceFactory->create(new \SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 3));
+            $message->addSource($fileSourceFactory->create(new SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 3));
             $expected[$engine . '.bar'] = $message;
 
             $message = new Message($engine . '.baz');
             $message->setMeaning('Baz');
-            $message->addSource($fileSourceFactory->create(new \SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 5));
+            $message->addSource($fileSourceFactory->create(new SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 5));
             $expected[$engine . '.baz'] = $message;
 
             $message = new Message($engine . '.foo_bar');
             $message->setDesc('Foo');
             $message->setMeaning('Bar');
-            $message->addSource($fileSourceFactory->create(new \SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 7));
+            $message->addSource($fileSourceFactory->create(new SplFileInfo($basePath . 'Resources/views/' . $engine . '_template.html.' . $engine), 7));
             $expected[$engine . '.foo_bar'] = $message;
         }
 
         // File with global namespace.
         $message = new Message('globalnamespace.foo');
-        $message->addSource($fileSourceFactory->create(new \SplFileInfo($basePath . 'GlobalNamespace.php'), 29));
+        $message->addSource($fileSourceFactory->create(new SplFileInfo($basePath . 'GlobalNamespace.php'), 29));
         $message->setDesc('Bar');
         $expected['globalnamespace.foo'] = $message;
 
@@ -99,7 +105,10 @@ class FileExtractorTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    private function extract($directory)
+    /**
+     * @throws Exception
+     */
+    private function extract($directory): MessageCatalogue
     {
         $twig = new Environment(new ArrayLoader([]));
         $twig->addExtension(new SymfonyTranslationExtension($translator = new IdentityTranslator()));
@@ -109,9 +118,9 @@ class FileExtractorTest extends TestCase
 
         $docParser = new DocParser();
         $docParser->setImports([
-            'desc' => Desc::class,
+            'desc'    => Desc::class,
             'meaning' => Meaning::class,
-            'ignore' => Ignore::class,
+            'ignore'  => Ignore::class,
         ]);
         $docParser->setIgnoreNotImportedAnnotations(true);
 

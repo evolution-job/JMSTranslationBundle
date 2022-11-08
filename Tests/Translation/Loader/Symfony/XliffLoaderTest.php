@@ -27,7 +27,7 @@ use Symfony\Component\Translation\MessageCatalogue;
 
 class XliffLoaderTest extends BaseLoaderTest
 {
-    public function testLoadOldFormat()
+    public function testLoadOldFormat(): void
     {
         $expected = new MessageCatalogue('en');
         $expected->add([
@@ -43,17 +43,17 @@ class XliffLoaderTest extends BaseLoaderTest
         $this->assertEquals($expected, $this->getLoader()->load($file, 'en'));
     }
 
-    protected function getInputFile($key)
+    protected function getInputFile($key): string
     {
-        $fileRealPath =  __DIR__ . '/../../Dumper/xliff/' . $key . '.xml';
-        if (! is_file($fileRealPath)) {
+        $fileRealPath = __DIR__ . '/../../Dumper/xliff/' . $key . '.xml';
+        if (!is_file($fileRealPath)) {
             throw new InvalidArgumentException(sprintf('The input file for key "%s" does not exist.', $key));
         }
 
         return $fileRealPath;
     }
 
-    protected function getLoader()
+    protected function getLoader(): XliffLoader
     {
         return new XliffLoader();
     }

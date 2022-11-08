@@ -26,7 +26,7 @@ use Symfony\Component\Translation\MessageCatalogue;
 
 abstract class BaseLoaderTest extends TestCase
 {
-    public function testLoadSimple()
+    public function testLoadSimple(): void
     {
         $expected = new MessageCatalogue('en');
         $expected->add(['foo' => 'foo']);
@@ -37,13 +37,13 @@ abstract class BaseLoaderTest extends TestCase
         $this->assertEquals($expected, $this->load($file));
     }
 
-    public function testLoadStructureWithMetadata()
+    public function testLoadStructureWithMetadata(): void
     {
         $expected = new MessageCatalogue('en');
         $expected->add([
             'foo.bar.baz' => 'Foo',
             'foo.bar.moo' => 'foo.bar.moo',
-            'foo.baz' => 'foo.baz',
+            'foo.baz'     => 'foo.baz',
         ]);
 
         $file = $this->getInputFile('structure_with_metadata');
@@ -52,7 +52,7 @@ abstract class BaseLoaderTest extends TestCase
         $this->assertEquals($expected, $this->load($file));
     }
 
-    public function testLoadStructure()
+    public function testLoadStructure(): void
     {
         $expected = new MessageCatalogue('en');
         $expected->add(['foo.bar.baz' => 'foo.bar.baz']);
@@ -63,7 +63,7 @@ abstract class BaseLoaderTest extends TestCase
         $this->assertEquals($expected, $this->load($file));
     }
 
-    public function testLoadWithMetadata()
+    public function testLoadWithMetadata(): void
     {
         $expected = new MessageCatalogue('en');
         $expected->add(['foo' => 'bar']);

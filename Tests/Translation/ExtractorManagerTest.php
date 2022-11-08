@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace JMS\TranslationBundle\Tests\Translation;
 
+use InvalidArgumentException;
 use JMS\TranslationBundle\Model\Message;
 use JMS\TranslationBundle\Model\MessageCatalogue;
 use JMS\TranslationBundle\Translation\Extractor\FileExtractor;
@@ -27,21 +28,22 @@ use JMS\TranslationBundle\Translation\ExtractorInterface;
 use JMS\TranslationBundle\Translation\ExtractorManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use ReflectionClass;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 
 class ExtractorManagerTest extends TestCase
 {
-    public function testSetEnabledCustomExtractorsThrowsExceptionWhenAliasInvalid()
+    public function testSetEnabledCustomExtractorsThrowsExceptionWhenAliasInvalid(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('There is no extractor with alias "foo". Available extractors: # none #');
 
         $manager = $this->getManager();
         $manager->setEnabledExtractors(['foo' => true]);
     }
 
-    public function testOnlySomeExtractorsEnabled()
+    public function testOnlySomeExtractorsEnabled(): void
     {
         $foo = $this->createMock(ExtractorInterface::class);
         $foo
@@ -65,9 +67,9 @@ class ExtractorManagerTest extends TestCase
         $this->assertEquals($catalogue, $manager->extract());
     }
 
-    public function testReset()
+    public function testReset(): void
     {
-        $foo    = $this->createMock(ExtractorInterface::class);
+        $foo = $this->createMock(ExtractorInterface::class);
         $logger = new NullLogger();
 
         $extractor = new FileExtractor(new Environment(new ArrayLoader([])), $logger, []);
@@ -78,8 +80,8 @@ class ExtractorManagerTest extends TestCase
         $manager->setEnabledExtractors(['foo' => true]);
         $manager->setDirectories(['/']);
 
-        $managerReflection   = new \ReflectionClass($manager);
-        $extractorReflection = new \ReflectionClass($extractor);
+        $managerReflection   = new ReflectionClass($manager);
+        $extractorReflection = new ReflectionClass($extractor);
 
         $enabledExtractorsProperty = $managerReflection->getProperty('enabledExtractors');
         $enabledExtractorsProperty->setAccessible(true);
@@ -106,7 +108,7 @@ class ExtractorManagerTest extends TestCase
         $this->assertEquals([], $excludedDirsProperty->getValue($extractor));
     }
 
-    private function getManager(?FileExtractor $extractor = null, array $extractors = [])
+    private function getManager(?FileExtractor $extractor = null, array $extractors = []): ExtractorManager
     {
         $logger = new NullLogger();
 

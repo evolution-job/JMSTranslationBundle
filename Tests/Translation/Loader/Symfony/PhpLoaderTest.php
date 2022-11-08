@@ -25,15 +25,15 @@ use Symfony\Component\Translation\Loader\PhpFileLoader;
 
 class PhpLoaderTest extends BaseLoaderTest
 {
-    protected function getLoader()
+    protected function getLoader(): PhpFileLoader
     {
         return new PhpFileLoader();
     }
 
-    protected function getInputFile($key)
+    protected function getInputFile($key): string
     {
-        $fileRealPath =  __DIR__ . '/../../Dumper/php/' . $key . '.php';
-        if (! is_file($fileRealPath)) {
+        $fileRealPath = __DIR__ . '/../../Dumper/php/' . $key . '.php';
+        if (!is_file($fileRealPath)) {
             throw new InvalidArgumentException(sprintf('The input file for key "%s" does not exist.', $key));
         }
 

@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 
 class ArrayStructureDumperTest extends TestCase
 {
-    public function testPathWithSubPath()
+    public function testPathWithSubPath(): void
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('fr');
@@ -40,7 +40,7 @@ class ArrayStructureDumperTest extends TestCase
             ->method('dumpStructure')
             ->with([
                 'foo' => [
-                    'bar' => new Message('foo.bar'),
+                    'bar'     => new Message('foo.bar'),
                     'bar.baz' => new Message('foo.bar.baz'),
                 ],
             ])

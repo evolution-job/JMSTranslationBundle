@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 
 class CatalogueComparatorTest extends TestCase
 {
-    public function testCompareWithMultipleDomains()
+    public function testCompareWithMultipleDomains(): void
     {
         $current = new MessageCatalogue();
         $current->add(Message::create('foo')->setLocaleString('bar'));
@@ -38,7 +38,7 @@ class CatalogueComparatorTest extends TestCase
         $new->add(new Message('foo'));
         $new->add(new Message('bar'));
 
-        $expected   = new ChangeSet(
+        $expected = new ChangeSet(
             [new Message('bar')],
             [Message::create('bar', 'routes')->setLocaleString('baz')]
         );

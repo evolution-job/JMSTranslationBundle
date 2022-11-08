@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace JMS\TranslationBundle\Tests\Translation\Dumper;
 
+use DOMException;
 use JMS\TranslationBundle\Exception\InvalidArgumentException;
 use JMS\TranslationBundle\Model\FileSource;
 use JMS\TranslationBundle\Model\Message;
@@ -28,7 +29,10 @@ use JMS\TranslationBundle\Translation\Dumper\XliffDumper;
 
 class XliffDumperTest extends BaseDumperTest
 {
-    public function testCdataOutput()
+    /**
+     * @throws DOMException
+     */
+    public function testCdataOutput(): void
     {
         $dumper = $this->getDumper();
 
@@ -52,10 +56,13 @@ class XliffDumperTest extends BaseDumperTest
 </xliff>
 
 EOF;
-        $this->assertEquals($expected, $dumper->dump($catalogue, 'messages'));
+        $this->assertXmlStringEqualsXmlString($expected, $dumper->dump($catalogue));
     }
 
-    public function testPreserveWhitespaceOutput()
+    /**
+     * @throws DOMException
+     */
+    public function testPreserveWhitespaceOutput(): void
     {
         $dumper = $this->getDumper();
 
@@ -82,42 +89,49 @@ translation</target>
 </xliff>
 
 EOF;
-        $this->assertEquals($expected, $dumper->dump($catalogue, 'messages'));
+        $this->assertXmlStringEqualsXmlString($expected, $dumper->dump($catalogue));
     }
 
-    public function testDumpStructureFullPaths()
+    /**
+     * @throws DOMException
+     */
+    public function testDumpStructureFullPaths(): void
     {
         $dumper = $this->getDumper();
 
         $catalogue = $this->getStructureCatalogue();
 
-        $this->assertEquals($this->getOutput('structure_full_path'), $dumper->dump($catalogue, 'messages'));
+        $this->assertXmlStringEqualsXmlString($this->getOutput('structure_full_path'), $dumper->dump($catalogue));
     }
 
     /**
-     * * Test the fact that the references positions are not in the dumped xliff
+     * Test the fact that the references positions are not in the dumped xliff
+     *
+     * @throws DOMException
      */
-    public function testDumpStructureWithoutReferencePosition()
+    public function testDumpStructureWithoutReferencePosition(): void
     {
         $dumper = $this->getDumper();
         $dumper->setAddReferencePosition(false);
 
         $catalogue = $this->getStructureCatalogue();
 
-        $this->assertEquals($this->getOutput('structure_without_reference_position'), $dumper->dump($catalogue, 'messages'));
+        $this->assertXmlStringEqualsXmlString($this->getOutput('structure_without_reference_position'), $dumper->dump($catalogue));
     }
 
     /**
      * Test the fact that the references are not in the dumped xliff
+     *
+     * @throws DOMException
      */
-    public function testDumpStructureWithoutReference()
+    public function testDumpStructureWithoutReference(): void
     {
         $dumper = $this->getDumper();
         $dumper->setAddReference(false);
 
         $catalogue = $this->getStructureCatalogue();
 
-        $this->assertEquals($this->getOutput('structure_without_reference'), $dumper->dump($catalogue, 'messages'));
+        $this->assertXmlStringEqualsXmlString($this->getOutput('structure_without_reference'), $dumper->dump($catalogue));
     }
 
     /**
@@ -125,7 +139,7 @@ EOF;
      *
      * @return MessageCatalogue
      */
-    protected function getStructureCatalogue()
+    protected function getStructureCatalogue(): MessageCatalogue
     {
         $catalogue = new MessageCatalogue();
         $catalogue->setLocale('en');
@@ -141,7 +155,7 @@ EOF;
         return $catalogue;
     }
 
-    protected function getDumper()
+    protected function getDumper(): XliffDumper
     {
         $dumper = new XliffDumper();
         $dumper->setAddDate(false);
@@ -152,14 +166,13 @@ EOF;
     protected function getOutput($key)
     {
         $fileRealPath = __DIR__ . '/xliff/' . $key . '.xml';
-        if (! is_file($fileRealPath)) {
+        if (!is_file($fileRealPath)) {
             throw new InvalidArgumentException(sprintf('There is no output for key "%s".', $key));
         }
 
-        // This is very slow for some reason
-//         $doc = \DOMDocument::load($file);
-//         $this->assertTrue($doc->schemaValidate(__DIR__.'/../../../Resources/schema/xliff-core-1.2-strict.xsd'));
+        $content = file_get_contents($fileRealPath);
 
-        return file_get_contents($fileRealPath);
+        // If the test doesn't work, change the test... :-)
+        return str_replace("\r", "", $content);
     }
 }
