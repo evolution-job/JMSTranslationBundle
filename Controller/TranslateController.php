@@ -83,7 +83,7 @@ class TranslateController
         $translationsDir = $this->configFactory->getConfig($config, 'en')->getTranslationsDir();
         $files = FileUtils::findTranslationFiles($translationsDir);
         if (empty($files)) {
-            throw new RuntimeException('There are no translation files for this config, please run the translation:extract command first.');
+            throw new RuntimeException('There are no translation files for this config, please run the jms:translation:extract command first.');
         }
 
         $domains = array_keys($files);

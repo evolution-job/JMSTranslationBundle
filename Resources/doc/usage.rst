@@ -120,7 +120,7 @@ Updating Files:
 
 .. code-block :: bash
 
-    php app/console translation:extract de --dir=./src/ --output-dir=./app/Resources/translations
+    php app/console jms:translation:extract de --dir=./src/ --output-dir=./app/Resources/translations
 
 If you would like to preview the changes first, you can simply add the ``--dry-run`` option.
 
@@ -129,14 +129,14 @@ process to your specific needs, just run:
 
 .. code-block :: bash
 
-    php app/console translation:extract --help
+    php app/console jms:translation:extract --help
 
 One notable option is "--bundle" which lets you easily dump the translation files for one
 bundle:
 
 .. code-block :: bash
 
-    php app/console translation:extract de --bundle=MyFooBundle
+    php app/console jms:translation:extract de --bundle=MyFooBundle
     
 .. tip ::
 

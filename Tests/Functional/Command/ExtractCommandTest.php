@@ -29,10 +29,10 @@ class ExtractCommandTest extends BaseCommandTestCase
     {
         $input = new ArgvInput([
             'app/console',
-            'translation:extract',
+            'jms:translation:extract',
             'en',
             '--dir=' . $inputDir = __DIR__ . '/../../Translation/Extractor/Fixture/SimpleTest',
-            '--output-dir=' . ($outputDir = sys_get_temp_dir() . '/' . uniqid('extract')),
+            '--output-dir=' . ($outputDir = sys_get_temp_dir() . '/' . uniqid('extract', true)),
         ]);
 
         $expectedOutput =
@@ -62,10 +62,10 @@ class ExtractCommandTest extends BaseCommandTestCase
     {
         $input = new ArgvInput([
             'app/console',
-            'translation:extract',
+            'jms:translation:extract',
             'en',
             '--dir=' . $inputDir = __DIR__ . '/../../Translation/Extractor/Fixture/SimpleTest',
-            '--output-dir=' . ($outputDir = sys_get_temp_dir() . '/' . uniqid('extract')),
+            '--output-dir=' . ($outputDir = sys_get_temp_dir() . '/' . uniqid('extract', true)),
             '--dry-run',
             '--verbose',
         ]);
