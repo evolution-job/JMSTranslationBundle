@@ -1,7 +1,9 @@
-phpunit.xml
-composer.lock
-vendor/
-.phpunit.result.cache
+.idea
+.idea/*
 .phpcs-cache
+.phpunit.result.cache
+composer.lock
+idea.*
 phpcs.xml
-.idea/
+phpunit.xml
+vendor/
