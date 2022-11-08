@@ -18,17 +18,17 @@
 
 namespace JMS\TranslationBundle;
 
+use JMS\TranslationBundle\DependencyInjection\Compiler\IntegrationPass;
 use JMS\TranslationBundle\DependencyInjection\Compiler\MountDumpersPass;
-use JMS\TranslationBundle\DependencyInjection\Compiler\MountLoadersPass;
 use JMS\TranslationBundle\DependencyInjection\Compiler\MountExtractorsPass;
 use JMS\TranslationBundle\DependencyInjection\Compiler\MountFileVisitorsPass;
-use JMS\TranslationBundle\DependencyInjection\Compiler\IntegrationPass;
+use JMS\TranslationBundle\DependencyInjection\Compiler\MountLoadersPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class JMSTranslationBundle extends Bundle
 {
-    const VERSION = '1.1.0-DEV';
+    const VERSION = '5.4.0';
 
     public function build(ContainerBuilder $container)
     {

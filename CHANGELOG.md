@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.4.0](https://github.com/evolution-job/JMSTranslationBundle/tree/5.4.0) (2022-11-08)
+
+- SF 5.4 Compatibility
+- rename commands translation:extract:* to jms:translation:extract:*
+- update composer to use packages 5.4.*
+- Code style refactoring
+- Fix tests
+
 ## [1.6.0](https://github.com/schmittjoh/JMSTranslationBundle/tree/1.6.0) (2021-01-16)
 
 - Php8 [\#556](https://github.com/schmittjoh/JMSTranslationBundle/pull/556) ([VincentLanglet](https://github.com/VincentLanglet))
